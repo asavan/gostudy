@@ -13,26 +13,20 @@ type limitReader struct {
 }
 
 func (g *limitReader) Read(bytes []byte) (n int, err error) { // error — это тип ошибки, подробнее мы рассмотрим его в следующем разделе.
-	if len(bytes) <= g.limit {
-		m, err := g.r.Read(bytes)
-		g.limit -= m
-		return m, err
-	}
-	buf := make([]byte, g.limit)
-
-	m, err := g.r.Read(buf)
-	if err != nil {
-		return m, err
-	}
-	for i := 0; i < m; i++ {
-		bytes[i] = buf[i]
-	}
-	g.limit -= m
 	if 0 == g.limit {
+		return 0, io.EOF
+	}
+	if len(bytes) > g.limit {
+		bytes = bytes[0:g.limit]
+	}
+
+	m, err := g.r.Read(bytes)
+	g.limit -= m
+	if 0 == g.limit && err == nil {
 		return m, io.EOF
 	}
 
-	return m, nil
+	return m, err
 }
 
 func LimitReader(r io.Reader, n int) io.Reader {
