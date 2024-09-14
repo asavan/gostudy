@@ -16,27 +16,25 @@ const (
 func area(id figures) (func(float64) float64, bool) {
 	switch id {
 	case triangle:
-		return func(f float64) float64 {
-			return f * f * math.Sqrt(3.) / 2.0
+		return func(x float64) float64 {
+			return x * x * math.Sqrt(3.) / 4.0
 		}, true
 	case circle:
 		return func(r float64) float64 {
 			return math.Pi * r * r
 		}, true
 	case square:
-		return func(f float64) float64 {
-			return f * f
+		return func(a float64) float64 {
+			return a * a
 		}, true
 	default:
-		return func(f float64) float64 {
-			return f
-		}, false
+		return nil, false
 	}
 
 }
 
 func main() {
-	myFigure := triangle
+	var myFigure figures = 1
 	ar, ok := area(myFigure)
 	if !ok {
 		fmt.Println("Ошибка")
